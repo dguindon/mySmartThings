@@ -39,7 +39,7 @@ definition(
     category: "Safety & Security",
     iconUrl: "https://raw.githubusercontent.com/dguindon/mySmartThings/master/resources/Blue-Iris-Logo.png",
     iconX2Url: "https://raw.githubusercontent.com/dguindon/mySmartThings/master/resources/Blue-Iris-Logo@2x.png",
-    iconX2Url: "https://raw.githubusercontent.com/dguindon/mySmartThings/master/resources/Blue-Iris-Logo@3x.png")
+    iconX3Url: "https://raw.githubusercontent.com/dguindon/mySmartThings/master/resources/Blue-Iris-Logo@3x.png")
 
 preferences {
     page(name: "mainPage", title: "", install: true, uninstall: true)
