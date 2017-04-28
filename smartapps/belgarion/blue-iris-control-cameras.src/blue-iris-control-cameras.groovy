@@ -4,9 +4,9 @@
  *
  *  Created by Belgarion (programmer_dave@yahoo.com)
  *
- *  Github: https://github.com/DGuindon/Blue-Iris/tree/master/smartapps/belgarion/blue-iris-control-cameras.src
+ *  Github: https://github.com/dguindon/mySmartThings/tree/master/smartapps/belgarion/blue-iris-control-cameras.src
  *
- *  PARENT APP CAN BE FOUND ON GITHUB: https://github.com/DGuindon/Blue-Iris/tree/master/smartapps/belgarion/blue-iris-control.src
+ *  PARENT APP CAN BE FOUND ON GITHUB: https://github.com/dguindon/mySmartThings/tree/master/smartapps/belgarion/blue-iris-control.src
  *
  *
  *  Based on work by:
