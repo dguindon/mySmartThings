@@ -53,11 +53,11 @@ def BIC_Cameras() {
             paragraph "Local or External Connection to Blue Iris Server (i.e. LAN vs WAN)?"
             input "localOnly", "bool", title: "Local connection?", required: true, submitOnChange: true
             if (localOnly) {
-                paragraph "NOTE: When using a local connection, you need to ensure 'Secure Only' is not checked in Blue Iris' Webserver settings."
-                paragraph "Since you're using a local connection, use the local IP address for Webserver Host, do not include 'http://' or anything but the IP address."
+                paragraph "NOTE: When using a local connection, you need to ensure 'Secure only' is not checked in the Blue Iris 'Options' -> 'Web server' settings."
+                paragraph "Since you're using a local connection, use the local IP address for the 'BI Webserver Host' parameter.  Do not include 'http://', '.com' or anything except for the IP address."
             } else {
-                paragraph "Since you're using an external connection, use the external IP address for Webserver Host, and be sure to include the full address (i.e. include http:// or https://, .com, etc)."
-                paragraph "If you are using Stunnel, ensure the SSL certificate is from a Certificate Authority (CA), it cannot be self-signed.  You can create a free CA signed certificate at www.letsencrypt.org"
+                paragraph "Since you're using an external connection, use the external IP address for 'BI Webserver Host' parameter and be sure to include the full address (i.e. include 'http://' or 'https://', '.com', etc)."
+                paragraph "If you are using Stunnel, ensure the SSL certificate is from a Certificate Authority (CA).  The SSL certificate can NOT be self-signed!  You can create a free CA signed certificate at 'www.letsencrypt.org'."
             }
             input "host", "text", title: "BI Webserver Host (only include 'http://' if using an external address)", required:true
             input "port", "number", title: "BI Webserver Port (e.g. 81)", required:true
@@ -96,17 +96,23 @@ def BIC_Cameras() {
 }
 
 def installed() {
-    if (loggingOn) log.debug "Installed with settings: ${settings}"
-    subscribe(location, modeChange)
+    if (loggingOn) log.debug "Installed executed"
+    initialize()
 }
 
 def updated() {
-    if (loggingOn) log.debug "Updated with settings: ${settings}"
+    if (loggingOn) log.debug "Updated executed"
     unsubscribe()
-    subscribe(location, modeChange)
+    initialize()
 }
 
-def modeChange(evt) {
+def initialize() {
+    //if (loggingOn) log.debug "Initialized with settings: ${settings}"
+    if (loggingOn) log.debug "Initialize executed"
+    subscribe(location, "mode", modeChangeHandler)
+}
+
+def modeChangeHandler(evt) {
     if (evt.name != "mode") {return;}
     if (loggingOn) log.debug "BI_modeChange detected. " + evt.value
     def checkMode = ""
@@ -129,10 +135,10 @@ def modeChange(evt) {
 def localAction(profile) {
     def biHost = "${host}:${port}"
     def biRawCommand = "/admin?profile=${profile}&user=${username}&pw=${password}"
-    if (loggingOn) log.debug "Changed Blue Iris Profile to ${profile} via GET to URL $biHost/$biRawCommand"
+    if (loggingOn) log.debug "Changed Blue Iris Profile to ${profile} via GET to URL $biHost/admin?profile=${profile}"
     if(!holdTemp) {
-        if(receiveAlerts == "No") sendNotificationEvent("Temporarily changed Blue Iris to Profile ${profileName(BIprofileNames,profile)}")
-        if(receiveAlerts == "Yes") send("Temporarily changed Blue Iris to Profile ${profileName(BIprofileNames,profile)}")
+        if(receiveAlerts == "No") sendNotificationEvent("Temporarily changed Blue Iris to Profile ${profile}")
+        if(receiveAlerts == "Yes") send("Temporarily changed Blue Iris to Profile ${profile}")
     }
     def httpMethod = "GET"
     def httpRequest = [
@@ -147,8 +153,8 @@ def localAction(profile) {
     sendHubCommand(hubAction)
     if(holdTemp) {
         sendHubCommand(hubAction)
-        if(receiveAlerts == "No") sendNotificationEvent("Blue Iris Control: 'Hold' changed Blue Iris to Profile ${profileName(BIprofileNames,profile)}")
-        if(receiveAlerts == "Yes") send("Blue Iris Control: 'Hold' changed Blue Iris to Profile ${profileName(BIprofileNames,profile)}")
+        if(receiveAlerts == "No") sendNotificationEvent("Blue Iris Control: 'Hold' changed Blue Iris to Profile ${profile}")
+        if(receiveAlerts == "Yes") send("Blue Iris Control: 'Hold' changed Blue Iris to Profile ${profile}")
     }
     //todo - add error notifications (need to figure out how to check for errors first!)
 }
@@ -326,7 +332,7 @@ def profileName(names, num) {
 
 private send(msg) {
     if (location.contactBookEnabled) {
-        if (loggingOn) log.debug("Sending notifications to: ${recipients?.size()}")
+        if (loggingOn) log.debug("Sending notifications to ${recipients?.size()} contact(s)")
         sendNotificationToContacts(msg, recipients)
     }
     else {
